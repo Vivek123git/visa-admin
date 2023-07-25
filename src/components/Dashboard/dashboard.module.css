@@ -1,0 +1,28 @@
+.dashboard-main-card {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  align-items: center;
+  text-align: center;
+  padding: 2rem 2rem;
+  color: #fff;
+}
+.card-title h4 {
+  color: #fff;
+}
+.dashboard-header-container {
+  display: grid;
+  grid-template-columns: repeat(1fr auto);
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-gap: 1.5rem;
+}
+.dashbord-content {
+  border-radius: 1rem;
+  background: linear-gradient(326deg, rgb(255 0 0) -18%, #0000ff8c 152%);
+}
+.graph-container {
+  margin-top: 5rem;
+}
+.graph-content {
+  display: flex;
+  align-items: baseline;
+}

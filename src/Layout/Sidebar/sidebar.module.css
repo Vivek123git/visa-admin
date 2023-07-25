@@ -1,0 +1,40 @@
+.sidebar {
+  background-color: var(--clr-primary);
+  width: 100%;
+  height: 100vh;
+}
+.logo-section {
+  margin: auto;
+  padding-block: 2rem;
+}
+.sidebar-item {
+  display: flex;
+  padding: 0.8rem;
+  align-items: center;
+  color: #fff;
+}
+.sidebar-item:hover {
+  color: var(--clr-primary);
+}
+.sidebar-content:hover {
+  background-color: #fff;
+  cursor: pointer;
+}
+.sidebar-title {
+  font-size: 19px;
+  padding-left: 0.5rem;
+}
+
+/* Hidden sidebar */
+
+.sidebar-title-hide {
+  display: none;
+}
+
+.logo-section-hide {
+  padding-top: 5.5rem;
+}
+
+.collapsed-logo {
+  transition: all 0.3s ease-in-out;
+}
