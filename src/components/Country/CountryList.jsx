@@ -9,7 +9,7 @@ import TableBody from "@mui/material/TableBody";
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import { tableCellClasses } from "@mui/material/TableCell";
-import s from "./../Events/event.module.css";
+import s from "./../FormField/event.module.css";
 import { useNavigate } from "react-router-dom";
 import { Dialog, DialogActions, DialogTitle, DialogContent, Pagination } from "@mui/material";
 import { article_delete_api, article_status_api } from "../api/article";

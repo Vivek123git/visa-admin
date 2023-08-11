@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import s from "./../Events/event.module.css";
+import s from "./../FormField/event.module.css";
 import { BiArrowBack } from "react-icons/bi";
 import { useNavigate } from "react-router-dom";
 import Custombutton from "../../Common/Custombutton";
