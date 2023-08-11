@@ -18,7 +18,7 @@ const AddAdmin = () => {
   const [phone, setphone] = useState("");
   const [password, setpassword] = useState("");
   const [file, setfile] = useState(null);
-  const [role, setRole] = useState("")
+  const [role, setRole] = useState("");
   const pagetype = location.state.pagetype;
   useEffect(() => {
     setfirstname(location?.state?.data?.first_name);
@@ -30,7 +30,6 @@ const AddAdmin = () => {
     setfile("");
     console.log(location);
   }, [location]);
-
 
   const create_admin = async () => {
     console.log(pagetype == "Add");
@@ -109,7 +108,11 @@ const AddAdmin = () => {
             <BiArrowBack />
             Back
           </div>
-          <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+          <Grid
+            container
+            rowSpacing={1}
+            columnSpacing={{ xs: 1, sm: 2, md: 3 }}
+          >
             <Grid item xs={6}>
               <div className="form-group">
                 <label for="exampleInputEmail1">First Name</label>
@@ -139,7 +142,14 @@ const AddAdmin = () => {
             <Grid item xs={6}>
               <div className="form-group">
                 <label for="exampleInputEmail1">Email</label>
-                <input type="text" className="form-control" name="eami" value={email} onChange={(e) => setemail(e.target.value)} placeholder="Email" />
+                <input
+                  type="text"
+                  className="form-control"
+                  name="eami"
+                  value={email}
+                  onChange={(e) => setemail(e.target.value)}
+                  placeholder="Email"
+                />
               </div>
             </Grid>
             <Grid item xs={6}>
@@ -174,23 +184,33 @@ const AddAdmin = () => {
               <div className="form-group">
                 <label for="exampleInputEmail1">Select Image</label>
                 <div className="  mr-2">
-                  <input type="file" className="form-control" name="img" placeholder="" accept="image/*" onChange={(e) => setfile(e.target.files[0])} />
+                  <input
+                    type="file"
+                    className="form-control"
+                    name="img"
+                    placeholder=""
+                    accept="image/*"
+                    onChange={(e) => setfile(e.target.files[0])}
+                  />
                 </div>
               </div>
             </Grid>
             <Grid item xs={6}>
-                <div className="form-group">
-                  <label for="exampleInputEmail1">Role</label>
-                  <select className="form-control" id="exampleFormControlSelect1" onChange={(e) => setRole(e.target.value)}>
-                    <option selected value="">
-                      Select Role
-                    </option>
-                    <option value="ADMIN">Admin</option>
-                    <option value="HR">HR</option>
-      
-                  </select>
-                </div>
-              </Grid>
+              <div className="form-group">
+                <label for="exampleInputEmail1">Role</label>
+                <select
+                  className="form-control"
+                  id="exampleFormControlSelect1"
+                  onChange={(e) => setRole(e.target.value)}
+                >
+                  <option selected value="">
+                    Select Role
+                  </option>
+                  <option value="ADMIN">Admin</option>
+                  <option value="HR">HR</option>
+                </select>
+              </div>
+            </Grid>
           </Grid>
           <div className={s["form-login-btn"]} onClick={() => create_admin()}>
             <Custombutton>Submit</Custombutton>

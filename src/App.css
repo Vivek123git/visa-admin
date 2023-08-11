@@ -102,3 +102,9 @@ section.data-notfound {
   height: 300px;
   justify-content: center;
 }
+
+.label-name{
+  font-size: larger;
+    color: black;
+    font-weight: 500;
+}

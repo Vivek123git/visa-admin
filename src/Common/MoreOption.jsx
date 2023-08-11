@@ -10,7 +10,8 @@ const MoreOption = () => {
   const navigate = useNavigate();
   const { state, dispatch } = useContext(UserContext);
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const profilePic = state?.profile?.profile_img;
+  // const profilePic = state?.profile?.profile_img;
+  const profilePic = "https://img.freepik.com/free-icon/user_318-219687.jpg?size=626&ext=jpg&ga=GA1.2.1287514297.1687952197&semt=ais";
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);

@@ -1,5 +1,5 @@
 import React from "react";
-import AddArticle from "../components/Articles/AddArticle";
+import AddArticle from "../components/Application/ApplicationAdd";
 const ArticleAdd = () => {
   return (
     <>

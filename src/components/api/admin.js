@@ -12,12 +12,11 @@ export const update_admin_api = async (data) => {
     method: "post",
     url: edit_admins,
     headers: { Authorization: `Bearer ${Cookies.get("token")}` },
-    data: data,
+    data,
   };
 
   try {
-    let res = await axios(config);
-    return res;
+    return await axios(config);
   } catch (error) {
     console.log(error);
     return error.response;

@@ -31,25 +31,25 @@ const Home = () => {
             icon: <FiUsers />,
           },
           {
-            title: "Total Internships",
+            title: "Total Pending",
             count: res.data.total_Internships,
             icon: <FiUsers />,
           },
-          {
-            title: "Total Internships Apply",
-            count: res.data.total_Internships_apply,
-            icon: <FiUsers />,
-          },
-          {
-            title: "Total Article",
-            count: res.data.total_Article,
-            icon: <RiArticleLine />,
-          },
-          {
-            title: "Total Event",
-            count: res.data.total_Event,
-            icon: <FiUsers />,
-          },
+          // {
+          //   title: "Total Internships Apply",
+          //   count: res.data.total_Internships_apply,
+          //   icon: <FiUsers />,
+          // },
+          // {
+          //   title: "Total Article",
+          //   count: res.data.total_Article,
+          //   icon: <RiArticleLine />,
+          // },
+          // {
+          //   title: "Total Event",
+          //   count: res.data.total_Event,
+          //   icon: <FiUsers />,
+          // },
         ]);
         setisLoading(false);
       } else {

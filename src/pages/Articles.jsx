@@ -1,5 +1,5 @@
 import React from "react";
-import Article from "../components/Articles/Article";
+import Article from "../components/Application/ApplicationList";
 
 const Users = () => {
   return (
