@@ -7,15 +7,13 @@ import { notificationHandler } from "../../utils/Notification";
 import { blankValidator, emailValidator } from "../../utils/Validation";
 import { useLocation } from "react-router-dom";
 import { Card, Grid } from "@mui/material";
-import { article_add_api, article_update_api, category_list_api } from "../api/article";
-import { update_category_api, add_category_api } from "../api/category";
+import { update_country_api, add_country_api } from "../api/CountryApi";
 import Loder from "../../Loder/Loder";
 
-const Category = () => {
+const CountryAdd = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  // const [AllCategories, setAllCategories] = useState([]);
-   const [profileImg, setprofileImg] = useState();
+  const [country, setCountry] = useState("");
   const [isLoading, setisLoading] = useState(false);
   const pagetype = location?.state?.pagetype;
   const id = location?.state?.data?._id;
@@ -25,60 +23,38 @@ const Category = () => {
     if (pagetype == "Edit") {
       const { date, name,  } =
         location?.state?.data;
-      console.log(location);
-      setformdata({
-        name: name,
-        // date: date,
-        
-      });
+      setCountry(name);
     }
-    get_categories();
+    // get_categories();
   }, [location]);
 
-  const get_categories = async () => {
-    try {
-      let res = await category_list_api();
-      if (res.data.status) {
-        console.log(res.data.results);
+  // const get_categories = async () => {
+  //   try {
+  //     let res = await category_list_api();
+  //     if (res.data.status) {
+  //       console.log(res.data.results);
    
-      } else {
-        notificationHandler({ type: "danger", msg: res.data.message });
-      }
-    } catch (error) {
-      notificationHandler({ type: "danger", msg: error.message });
-      console.log(error);
-    }
-  };
-
-  const [formdata, setformdata] = useState({
-    name: "",
-    // date: "",
-    
-  });
+  //     } else {
+  //       notificationHandler({ type: "danger", msg: res.data.message });
+  //     }
+  //   } catch (error) {
+  //     notificationHandler({ type: "danger", msg: error.message });
+  //     console.log(error);
+  //   }
+  // };
  
-  const getformdetails = (e) => {
-    setformdata({ ...formdata, [e.target.name]: e.target.value });
-    // setformdata(...setformdata);
-  };
-  const create_event = async () => {
+  const create_countryAdd = async () => {
 
     setisLoading(true);
     if (pagetype == "Add") {
-      const fd = new FormData();
-      fd.append("name", formdata.name);
-      // fd.append("date", formdata.date);
-      fd.append("category_img", profileImg);
-      // fd.append("id", "");
+      const fd = {
+        name:country
+      }
       try {
-        let res = await add_category_api(fd);
+        let res = await add_country_api(fd);
         if (res.data.status) {
           console.log(res);
-          navigate("/category-list");
-          setprofileImg("");
-          setformdata({
-            name: "",
-            // date: "",
-          });
+          navigate("/add-country-list");
           setisLoading(false);
           notificationHandler({ type: "success", msg: res.data.message });
         } else {
@@ -92,16 +68,11 @@ const Category = () => {
       }
     }
     if (pagetype == "Edit") {
-      const fd = new FormData();
-      fd.append("name", formdata.name);
-      // fd.append("date", formdata.date);
-      fd.append("category_img ", profileImg);
-      fd.append("Cid", id);
+      const fd = country
       try {
-        let res = await update_category_api(fd);
+        let res = await update_country_api(fd);
         if (res.data.status) {
-          console.log(res);
-          navigate("/category-list");
+          navigate("/add-country-list");
           setisLoading(false);
           notificationHandler({ type: "success", msg: res.data.message });
         } else {
@@ -114,40 +85,7 @@ const Category = () => {
         setisLoading(false);
       }
     }
-    // if (pagetype == "View") {
-    //   const fd = new FormData();
-    //   fd.append("name", formdata.name);
-    //   fd.append("description", formdata.description);
-    //   fd.append("category_id", formdata.category_id);
-    //   fd.append("date", formdata.date);
-    //   fd.append("date2", formdata.date2);
-    //   fd.append("start_time", formdata.start_time);
-    //   fd.append("end_time", formdata.end_time);
-    //   fd.append("general_price", formdata.general_price);
-    //   fd.append("couple_price", formdata.couple_price);
-    //   fd.append("vip_price", formdata.vip_price);
-    //   fd.append("location", formdata.location);
-    //   fd.append("image", profileImg);
-    //   fd.append("id", id);
-    //   try {
-    //     let res = await update_event_api(fd);
-    //     if (res.data.status) {
-    //       console.log(res);
-    //       navigate("/event-list");
-    //       setisLoading(false);
-    //       notificationHandler({ type: "success", msg: res.data.message });
-    //     } else {
-    //       notificationHandler({ type: "success", msg: res.data.message });
-    //       setisLoading(false);
-    //     }
-    //   } catch (error) {
-    //     notificationHandler({ type: "danger", msg: error.message });
-    //     console.log(error);
-    //     setisLoading(false);
-    //   }
-    // }
-  
-
+ 
   };
 
   
@@ -162,35 +100,16 @@ const Category = () => {
             Back
           </div>
           <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }} style={{paddingTop:"20px"}}>
-            <Grid item xs={6}>
-            <div className="form-group">
-                <label className="label-name">Select Country</label>
-                <select
-                  className="form-control"
-                  id="exampleFormControlSelect1"
-                  // onChange={(e) => setToCountry(e.target.value)}
-                >
-                  <option selected value="">
-                    Select Country
-                  </option>
-                  <option value="IN">India</option>
-                  <option value="USSR">Russia</option>
-                </select>
+          <Grid item xs={12}>
+              <div className="form-group">
+                <label for="exampleInputEmail1">Country Name</label>
+                <input type="text" className="form-control"  value={country} onChange={(e)=>setCountry(e.target.value)} placeholder="Enter country name" />
               </div>
             </Grid>
-
-            {/* <Grid item xs={6}>
-              <div className="form-group">
-                <label for="exampleInputEmail1">Select Image</label>
-                <div className="  mr-2">
-                  <input type="file" className="form-control" accept="image/*" onChange={(e) => setprofileImg(e.target.files[0])} />
-                </div>
-              </div>
-            </Grid> */}
            
            </Grid>
 
-          <div className={s["form-login-btn"]} onClick={() => create_event()}>
+          <div className={s["form-login-btn"]} onClick={() => create_countryAdd()}>
             <Custombutton>{pagetype == "Add" ? "Submit" : "Update"} </Custombutton>
           </div>
         </Card>
@@ -200,4 +119,4 @@ const Category = () => {
   );
 };
 
-export default Category;
+export default CountryAdd;

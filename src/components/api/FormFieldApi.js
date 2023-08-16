@@ -2,15 +2,28 @@ import Cookies from "js-cookie";
 import axios from "axios";
 import { getBaseUrl } from "../../utils";
 
-const skill_list = getBaseUrl() + "admin_api/allskills";
-const skill = getBaseUrl() + "admin_api/add_skill";
-const edit_skill = getBaseUrl() + "admin_api/edit_skill";
-const delete_skill = getBaseUrl() + "admin_api/delete_skill";
 
-export const update_skill_api = async (data) => {
+
+export const formField_update_api = async (data) => {
+  let config = {
+    method: "patch",
+    url:  getBaseUrl() + "form_fields",
+    headers: { Authorization: `Bearer ${Cookies.get("token")}` },
+    data: data,
+  };
+
+  try {
+    let res = await axios(config);
+    return res;
+  } catch (error) {
+    console.log(error);
+    return error.response;
+  }
+};
+export const formField_add_api = async (data) => {
   let config = {
     method: "post",
-    url: edit_skill,
+    url: getBaseUrl() + "form_fields",
     headers: { Authorization: `Bearer ${Cookies.get("token")}` },
     data: data,
   };
@@ -24,11 +37,10 @@ export const update_skill_api = async (data) => {
   }
 };
 
-
-export const add_skill_api = async (data) => {
+export const fetchAllFormField = async (data) => {
   let config = {
-    method: "post",
-    url: skill,
+    method: "get",
+    url: getBaseUrl() + "form_fields",
     headers: { Authorization: `Bearer ${Cookies.get("token")}` },
     data: data,
   };
@@ -42,29 +54,11 @@ export const add_skill_api = async (data) => {
   }
 };
 
-export const fetchAllSkill = async (data) => {
+export const formField_delete_api = async (data) => {
   let config = {
-    method: "post",
-    url: skill_list,
+    method: "delete",
+    url: getBaseUrl()+`form_fields/${data}`,
     headers: { Authorization: `Bearer ${Cookies.get("token")}` },
-    data: data,
-  };
-
-  try {
-    let res = await axios(config);
-    return res;
-  } catch (error) {
-    console.log(error);
-    return error.response;
-  }
-};
-
-export const delete_skill_api = async (data) => {
-  let config = {
-    method: "post",
-    url: delete_skill,
-    headers: { Authorization: `Bearer ${Cookies.get("token")}` },
-    data: data,
   };
 
   try {

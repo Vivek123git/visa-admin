@@ -7,37 +7,122 @@ import { notificationHandler } from "../../utils/Notification";
 import { blankValidator, emailValidator } from "../../utils/Validation";
 import { useLocation } from "react-router-dom";
 import { Card, Grid } from "@mui/material";
-import {
-  article_add_api,
-  article_update_api,
-  category_list_api,
-} from "../api/article";
-import { add_event_api, update_event_api } from "../api/event";
+
+import { formField_add_api, formField_update_api } from "../api/FormFieldApi";
 import Loder from "../../Loder/Loder";
 const AddEvent = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  // const [AllCategories, setAllCategories] = useState([]);
-  // const [profileImg, setprofileImg] = useState();
   const [isLoading, setisLoading] = useState(false);
   const pagetype = location?.state?.pagetype;
   const place = location?.state?.data?.location;
-  const id = location?.state?.data?.id;
+  const id = location?.state?.data?._id;
 
   const [formData, setFormData] = useState({
-    name: "",
+    value: "",
     type: "",
+    defaultChecked: false,
     placeholder: "",
   });
-
   const [optionBox, setOptionBox] = useState(false);
-  const [optionArr ,setOptionArr] = useState([
+  const [optionArr, setOptionArr] = useState([
     {
-      name:"",
-      value:"",
-      key:Date.now()
+      name: "",
+      value: "",
+      key: Date.now(),
+    },
+  ]);
+
+  useEffect(() => {
+    if (pagetype === "Edit") {
+      setFormData({
+        ...formData,
+        value: location?.state?.data?.value,
+        type: location?.state?.data?.type,
+        placeholder: location?.state?.data?.placeholder,
+      });
+
+      let a = location?.state?.data?.type;
+      console.log(a)
+      if (a === "select" || a === "radio" || a === "check" ) {
+        const updatedOptions = location?.state?.data?.sub_fields.map(item => ({
+          name: item.name,
+          value: item.value,
+          key: item.key,
+        }));
+      setOptionBox(true);
+        const newOptionArr = updatedOptions;
+        setOptionArr(newOptionArr);
+      }
     }
-  ])
+  }, [location]);
+ 
+
+  const create_formField = async () => {
+    setisLoading(true);
+    if (pagetype == "Add") {
+      const fd = {
+        value: formData.value,
+        type: formData.type,
+        sub_fields:optionArr ,
+        placeholder:formData.placeholder,
+        default_checked: formData.defaultChecked,
+      };
+      // fd.append("id", "");
+      try {
+        let res = await formField_add_api(fd);
+        if (res.data.status) {
+          console.log(res);
+          navigate("/form-list");
+
+        
+          setisLoading(false);
+          notificationHandler({ type: "success", msg: res.data.message });
+        } else {
+          notificationHandler({ type: "success", msg: res.data.message });
+          setisLoading(false);
+        }
+        setFormData({
+          ...formData,
+          value: "",
+          type: "",
+          defaultChecked: false,
+          placeholder: "",
+         })
+       setOptionArr([])
+      } catch (error) {
+        notificationHandler({ type: "danger", msg: error.message });
+        setisLoading(false);
+        console.log(error);
+      }
+    }
+    if (pagetype == "Edit") {
+      const fd = {
+        value: formData.value,
+        type: formData.type,
+        sub_fields:optionArr ,
+        placeholder:formData.placeholder,
+        default_checked: formData.defaultChecked,
+        id:id
+      };
+      try {
+        let res = await formField_update_api(fd);
+        if (res.data.status) {
+          console.log(res);
+          navigate("/form-list");
+          setisLoading(false);
+          notificationHandler({ type: "success", msg: res.data.message });
+        } else {
+          notificationHandler({ type: "success", msg: res.data.message });
+          setisLoading(false);
+        }
+      } catch (error) {
+        notificationHandler({ type: "danger", msg: error.message });
+        console.log(error);
+        setisLoading(false);
+      }
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -63,29 +148,29 @@ const AddEvent = () => {
     }
   };
 
-  const handleAddOption=()=>{
-    const newOptionArr =  {
+  const handleAddOption = () => {
+    const newOptionArr = {
       name: "",
       value: "",
       key: Date.now(),
-    }
-    setOptionArr((prev) => [...prev,newOptionArr]);
-  }
+    };
+    setOptionArr((prev) => [...prev, newOptionArr]);
+  };
 
-  const handleRemoveOption=(id)=>{
-    const newArr = optionArr.filter((elem,ind)=>{
-     return elem.key!==id;
-    })
-    setOptionArr(newArr)
-  }
+  const handleRemoveOption = (id) => {
+    const newArr = optionArr.filter((elem, ind) => {
+      return elem.key !== id;
+    });
+    setOptionArr(newArr);
+  };
 
-  const handleOptionChange=(e,id)=>{
-    const {name,value} = e.target;
-    const updatedOptions = optionArr.map((elem,index)=>{
-      return elem.key==id? {...elem,[name]:value}:elem
-    })
-    setOptionArr(updatedOptions)
-  }
+  const handleOptionChange = (e, id) => {
+    const { name, value } = e.target;
+    const updatedOptions = optionArr.map((elem, index) => {
+      return elem.key == id ? { ...elem, [name]: value } : elem;
+    });
+    setOptionArr(updatedOptions);
+  };
 
   return (
     <>
@@ -106,8 +191,8 @@ const AddEvent = () => {
                 <input
                   type="text"
                   className="form-control"
-                  name="name"
-                  value={formData.name}
+                  name="value"
+                  value={formData.value}
                   onChange={(e) => handleChange(e)}
                   placeholder="Name"
                 />
@@ -155,72 +240,72 @@ const AddEvent = () => {
             </Grid>
           </Grid>
 
-          {optionBox ? (
-            optionArr.map((elem,key)=>{
-              console.log(elem,"ekdedn")
-            return(
-              <Grid
-              container
-              rowSpacing={1}
-              columnSpacing={{ xs: 1, sm: 2, md: 3 }}
-            >
-              <Grid item xs={4}>
-                <div className="form-group">
-                  <label className="label-name">Option Field</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    name="name"
-                    value={elem.name}
-                    onChange={(e) => handleOptionChange(e,elem.key)}
-                    placeholder="Option Field"
-                  />
-                </div>
-              </Grid>
-              <Grid item xs={4}>
-                <div className="form-group">
-                  <label className="label-name">Option Value</label>
-                  <div className="  mr-2">
-                    <input
-                      type="text"
-                      className="form-control"
-                      name="value"
-                      value={elem.value}
-                      placeholder="Option Value"
-                      onChange={(e) => handleOptionChange(e,elem.key)}
-                    />
-                  </div>
-                </div>
-              </Grid>
-              <Grid item xs={2}>
-                <div
-                style={{marginTop:"1.5rem"}}
-                  //  onClick={() => create_event()}
-                  onClick={handleAddOption}
-                >
-                  <Custombutton >Add</Custombutton>
-                </div>
-              </Grid>
-              {console.log(key,"key")}
-              {key=="0"?"":<Grid item xs={2}>
-                <div
-                style={{marginTop:"1.5rem"}}
-                  //  onClick={() => create_event()}
-                  onClick={()=>handleRemoveOption(elem.key)}
-                >
-                  <Custombutton >Remove</Custombutton>
-                </div>
-              </Grid>}
-            </Grid>
-            )
-            })
-          ) : (
-            ""
-          )}
+          {optionBox
+            ? optionArr.map((elem, key) => {
+                return (
+                  <Grid
+                    container
+                    rowSpacing={1}
+                    columnSpacing={{ xs: 1, sm: 2, md: 3 }}
+                  >
+                    <Grid item xs={4}>
+                      <div className="form-group">
+                        <label className="label-name">Option Field</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          name="name"
+                          value={elem.name}
+                          onChange={(e) => handleOptionChange(e, elem.key)}
+                          placeholder="Option Field"
+                        />
+                      </div>
+                    </Grid>
+                    <Grid item xs={4}>
+                      <div className="form-group">
+                        <label className="label-name">Option Value</label>
+                        <div className="  mr-2">
+                          <input
+                            type="text"
+                            className="form-control"
+                            name="value"
+                            value={elem.value}
+                            placeholder="Option Value"
+                            onChange={(e) => handleOptionChange(e, elem.key)}
+                          />
+                        </div>
+                      </div>
+                    </Grid>
+                    <Grid item xs={2}>
+                      <div
+                        style={{ marginTop: "1.5rem" }}
+                        //  onClick={() => create_event()}
+                        onClick={handleAddOption}
+                      >
+                        <Custombutton>Add</Custombutton>
+                      </div>
+                    </Grid>
+                    {key == "0" ? (
+                      ""
+                    ) : (
+                      <Grid item xs={2}>
+                        <div
+                          style={{ marginTop: "1.5rem" }}
+                          //  onClick={() => create_event()}
+                          onClick={() => handleRemoveOption(elem.key)}
+                        >
+                          <Custombutton>Remove</Custombutton>
+                        </div>
+                      </Grid>
+                    )}
+                  </Grid>
+                );
+              })
+            : ""}
 
           <div
             className={s["form-login-btn"]}
-            //  onClick={() => create_event()}
+            onClick={() => create_formField()}
           >
             <Custombutton>
               {pagetype == "Add" ? "Submit" : "Update"}{" "}

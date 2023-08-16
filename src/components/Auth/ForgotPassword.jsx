@@ -1,12 +1,12 @@
 import React, { useState, useContext, useEffect } from "react";
 import s from "./auth.module.css";
-import logo from "../../assets/icons/logo.svg";
+// import logo from "../../assets/icons/logo.svg";
 import { FaRegUser } from "react-icons/fa";
 import { FiLock } from "react-icons/fi";
 import { BsEyeSlash, BsEye } from "react-icons/bs";
 import Custombutton from "../../Common/Custombutton";
 import { useNavigate } from "react-router-dom";
-import authapi from "../api/auth";
+import {forgetPass} from "../api/auth";
 import Cookies from "js-cookie";
 import { UserContext } from "../../App";
 import { blankValidator, emailValidator } from "../../utils/Validation";
@@ -15,11 +15,12 @@ import EmailVerification from "../Dialogbox/EmailVerification";
 const ForgotPassword = () => {
   const navigate = useNavigate();
   const { state, dispatch } = useContext(UserContext);
-  const [showPass, setshowPass] = useState(false);
   const [email, setemail] = useState("");
   const [password, setpassword] = useState("");
   const [isloading, setisloading] = useState(false);
   const [emailverify, setemailverify] = useState(false);
+
+  const logo = "https://img.freepik.com/free-vector/detailed-travel-logo-concept_23-2148623454.jpg?size=626&ext=jpg&ga=GA1.2.1287514297.1687952197&semt=ais"
 
   useEffect(() => {
     Cookies.remove("token");
@@ -41,7 +42,7 @@ const ForgotPassword = () => {
       password,
     };
     try {
-      const res = await authapi(temp);
+      const res = await forgetPass(temp);
       if (res.data.status) {
         console.log(res);
         const token = res.data.token;

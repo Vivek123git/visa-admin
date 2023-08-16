@@ -7,10 +7,10 @@ import { notificationHandler } from "../../utils/Notification";
 import { blankValidator, emailValidator } from "../../utils/Validation";
 import { useLocation } from "react-router-dom";
 import { Card, Grid } from "@mui/material";
-import { article_add_api, article_update_api, category_list_api } from "../api/article";
-import { add_event_api, update_event_api } from "../api/event";
+import { article_add_api, article_update_api, category_list_api } from "../api/ApplicationApi";
+import { add_event_api, update_event_api } from "../api/FormFieldApi";
 import Loder from "../../Loder/Loder";
-const ViewArticle = () => {
+const ViewApplication = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const [isLoading, setisLoading] = useState(false);
@@ -93,4 +93,4 @@ const ViewArticle = () => {
     );
 };
 
-export default ViewArticle;
+export default ViewApplication;

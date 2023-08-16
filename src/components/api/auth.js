@@ -3,9 +3,10 @@ import Cookies from "js-cookie";
 import axios from "axios";
 import { getBaseUrl } from "../../utils";
 
-const admin_login = getBaseUrl() + "admin_api/admin_login";
+const admin_login = getBaseUrl() + "users/login";
+const  forget_pass = getBaseUrl() + "users/forget_password";
 
-const authapi = async (data) => {
+export const authapi = async (data) => {
   try {
     let config = {
       headers: { Authorization: `Bearer ${Cookies.get("token")}` },
@@ -18,4 +19,16 @@ const authapi = async (data) => {
   }
 };
 
-export default authapi;
+export const forgetPass = async (data) => {
+  try {
+    let config = {
+      headers: { Authorization: `Bearer ${Cookies.get("token")}` },
+    };
+
+    return await axios.post(forget_pass, data, config);
+  } catch (error) {
+    console.log(error);
+    return error.response;
+  }
+};
+

@@ -13,10 +13,9 @@ import s from "./articles.module.css";
 import { useNavigate } from "react-router-dom";
 import { Grid, Pagination } from "@mui/material";
 import {
-  article_delete_api,
-  article_status_api,
-  fetchAllArticles,
-} from "../api/article";
+  application_delete_api,
+  fetchAllApplication,
+} from "../api/ApplicationApi";
 import { notificationHandler } from "../../utils/Notification";
 import Loder from "../../Loder/Loder";
 import DataNotFound from "../ErrorPage/DataNotFound";
@@ -25,10 +24,10 @@ import DeletePopup from "../Dialogbox/DeletePopup";
 import FilterPopup from "../Dialogbox/FilterPopup";
 import { AiFillEye } from "react-icons/ai";
 
-const SubAdminList = () => {
+const ApplicationList = () => {
   const navigate = useNavigate();
   const [isLoading, setisLoading] = useState(false);
-  const [allArticle, setallArticle] = useState([]);
+  const [allApplication, setallApplication] = useState([]);
   const [pageCount, setpageCount] = useState(1);
   const [deleteId, setdeleteId] = useState();
   const [deletedialobbox, setdeletedialobbox] = useState(false);
@@ -37,26 +36,27 @@ const SubAdminList = () => {
   const [status, setstatus] = useState();
   const [enddate, setenddate] = useState();
   const [startdate, setstartdate] = useState();
+
   useEffect(() => {
-    fetchAllArticleFunc();
+    fetchAllApplicationFunc();
   }, [pageCount]);
 
-  async function fetchAllArticleFunc(data) {
+  async function fetchAllApplicationFunc(data) {
     setisLoading(true);
     try {
-      const temp = {
-        page: pageCount,
-        limit: 8,
-        search: data ? data.trim() : "",
-        status: status,
-        from_date: startdate,
-        to_date: enddate,
-      };
-      let res = await fetchAllArticles(temp);
+      // const temp = {
+      //   page: pageCount,
+      //   limit: 8,
+      //   search: data ? data.trim() : "",
+      //   status: status,
+      //   from_date: startdate,
+      //   to_date: enddate,
+      // };
+      let res = await fetchAllApplication();
       if (res.data.status) {
         let calPageLength = Math.ceil(res.data.count / 8);
         setpageLength(calPageLength);
-        setallArticle(res.data.results);
+        setallApplication(res.data.data);
         setisLoading(false);
       } else {
         setisLoading(false);
@@ -77,11 +77,11 @@ const SubAdminList = () => {
         from_date: startdate,
         to_date: enddate,
       };
-      let res = await fetchAllArticles(temp);
+      let res = await fetchAllApplication(temp);
       if (res.data.status) {
         let calPageLength = Math.ceil(res.data.count / 8);
         setpageLength(calPageLength);
-        setallArticle(res.data.results);
+        setallApplication(res.data.data);
         setisLoading(false);
       } else {
         setisLoading(false);
@@ -106,11 +106,11 @@ const SubAdminList = () => {
         from_date: "",
         to_date: "",
       };
-      let res = await fetchAllArticles(temp);
+      let res = await fetchAllApplication(temp);
       if (res.data.status) {
         let calPageLength = Math.ceil(res.data.count / 8);
         setpageLength(calPageLength);
-        setallArticle(res.data.results);
+        setallApplication(res.data.results);
         setisLoading(false);
       } else {
         setisLoading(false);
@@ -144,17 +144,13 @@ const SubAdminList = () => {
 
   async function deletearticleFunc() {
     setisLoading(true);
-    let temp = {
-      id: deleteId,
-      is_delete: "1",
-    };
+    let temp = deleteId
     try {
-      let res = await article_delete_api(temp);
-      console.log(res);
+      let res = await application_delete_api(temp);
       if (res.data.status) {
         setisLoading(false);
         setdeletedialobbox(false);
-        fetchAllArticleFunc();
+        fetchAllApplicationFunc();
         notificationHandler({ type: "success", msg: res.data.message });
       } else {
         setisLoading(false);
@@ -165,29 +161,6 @@ const SubAdminList = () => {
       notificationHandler({ type: "danger", msg: error.message });
     }
   }
-
-  const article_status = async (data, e) => {
-    setisLoading(true);
-    let temp = {
-      id: data.id,
-      status: e.target.value,
-      user_id:data.user_id
-    };
-    try {
-      let res = await article_status_api(temp);
-      if (res.data.status) {
-        setisLoading(false);
-        fetchAllArticleFunc();
-        notificationHandler({ type: "success", msg: res.data.message });
-      } else {
-        setisLoading(false);
-        notificationHandler({ type: "danger", msg: res.data.message });
-      }
-    } catch (error) {
-      console.log(error);
-      notificationHandler({ type: "danger", msg: error.message });
-    }
-  };
 
   return (
     <div className="container">
@@ -219,7 +192,7 @@ const SubAdminList = () => {
             <input
               type="text"
               spellCheck="false"
-              onChange={(e) => fetchAllArticleFunc(e.target.value)}
+              onChange={(e) => fetchAllApplicationFunc(e.target.value)}
               placeholder="Search by name..."
             />
           </div>
@@ -231,53 +204,10 @@ const SubAdminList = () => {
             container
             rowSpacing={1}
             columnSpacing={{ xs: 1, sm: 2, md: 3 }}
-          >
-            <Grid item xs={4}>
-              <div className="form-group">
-                <label for="exampleInputEmail1">Start Date</label>
-                <input
-                  type="date"
-                  placeholder="Role"
-                  className="form-control"
-                  value={startdate}
-                  onChange={(e) => setstartdate(e.target.value)}
-                />
-              </div>
-            </Grid>
-            <Grid item xs={4}>
-              <div className="form-group">
-                <label for="exampleInputEmail1">End Date</label>
-                <input
-                  type="date"
-                  placeholder="Role"
-                  className="form-control"
-                  value={enddate}
-                  onChange={(e) => setenddate(e.target.value)}
-                />
-              </div>
-            </Grid>
-            <Grid item xs={4}>
-              <div className="form-group">
-                <label for="exampleInputEmail1">Status</label>
-                <select
-                  className="form-control"
-                  id="exampleFormControlSelect1"
-                  value={status}
-                  onChange={(e) => setstatus(e.target.value)}
-                >
-                  <option selected value="">
-                    Select
-                  </option>
-                  <option value="Published">Published</option>
-                  <option value="draft">Draft</option>
-                  <option value="Pending">Pending</option>
-                  <option value="Reject">Reject</option>
-                </select>
-              </div>
-            </Grid>
+          >   
           </Grid>
         </div>
-        <div className="filter-right">
+        {/* <div className="filter-right">
           <div
             className={s["filter-btn"]}
             onClick={() => filterAllArticleFunc()}
@@ -295,93 +225,39 @@ const SubAdminList = () => {
           }}
         >
           Reset
-        </div>
+        </div> */}
       </div>
       <div className="beat_table">
         <Table sx={{ minWidth: 700 }} aria-label="customized table">
           <TableHead>
             <TableRow>
-              <StyledTableCell>Image</StyledTableCell>
-              <StyledTableCell align="center">Name</StyledTableCell>
-              <StyledTableCell align="center">User Name</StyledTableCell>
-              <StyledTableCell align="center">Category Name</StyledTableCell>
-              <StyledTableCell align="center">Article Like</StyledTableCell>
-              <StyledTableCell align="center">Article View</StyledTableCell>
-              <StyledTableCell align="center">Article Comment</StyledTableCell>
-              <StyledTableCell align="center">Date</StyledTableCell>
-              <StyledTableCell align="center">Status</StyledTableCell>
+              <StyledTableCell>S. No.</StyledTableCell>
+              <StyledTableCell align="center">From Country</StyledTableCell>
+              <StyledTableCell align="center">To Country</StyledTableCell>
+              <StyledTableCell align="center">Visa Type</StyledTableCell>
               <StyledTableCell align="center">Action</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {allArticle.map((row) => (
-              <StyledTableRow key={row.id}>
-                <StyledTableCell>
-                  {row.image ? (
-                    <img
-                      style={{ height: "2rem", width: "3rem" }}
-                      src={row.image}
-                      alt=""
-                    />
-                  ) : null}
-                </StyledTableCell>
-                <StyledTableCell>{row.name} </StyledTableCell>
+            {allApplication.length>0?
+            allApplication.map((row,id) => (
+            
+              <StyledTableRow key={row._id}>
+                <StyledTableCell>{id+1}</StyledTableCell>
                 <StyledTableCell align="center">
-                  {row.user_name}{" "}
+                  {row.from_country.name}
                 </StyledTableCell>
                 <StyledTableCell align="center">
-                  {row.category_name}
+                  {row.to_country.name}
                 </StyledTableCell>
                 <StyledTableCell align="center">
-                  {row.article_like}
+                  {row.visa_type.type}
                 </StyledTableCell>
-                <StyledTableCell align="center">
-                  {row.article_view}
-                </StyledTableCell>
-                <StyledTableCell align="center">
-                  {row.article_comment}
-                </StyledTableCell>
-                <StyledTableCell align="center">
-                  {row.Created_date}
-                </StyledTableCell>
-                <StyledTableCell align="center">
-                  <div className="form-group">
-                    <select
-                      className="form-control"
-                      id="exampleFormControlSelect1"
-                      style={{
-                        color: `${
-                          row.status === "Published"
-                            ? "green"
-                            : row.status === "Pending"
-                            ? "black"
-                            : row.status === "Reject"
-                            ? "red"
-                            : "gray"
-                        }`,
-                      }}
-                      value={row.status}
-                      onChange={(e) => article_status(row, e)}
-                    >
-                      <option style={{ color: "black" }} value="Published">
-                        Published
-                      </option>
-                      <option style={{ color: "black" }} value="draft">
-                        Draft
-                      </option>
-                      <option style={{ color: "black" }} value="Pending">
-                        Pending
-                      </option>
-                      <option style={{ color: "black" }} value="Reject">
-                        Reject
-                      </option>
-                    </select>
-                  </div>
-                </StyledTableCell>
+                
                 <StyledTableCell align="center">
                   <CiEdit
                     onClick={() =>
-                      navigate("/articleadd", {
+                      navigate("/add-application", {
                         state: {
                           pagetype: "Edit",
                           data: row,
@@ -400,7 +276,7 @@ const SubAdminList = () => {
                     onClick={() => {
                       setdeletedialobbox(true);
                       setdeletename(row.user_name);
-                      setdeleteId(row.id);
+                      setdeleteId(row._id);
                     }}
                     title="Delete"
                     style={{
@@ -409,7 +285,7 @@ const SubAdminList = () => {
                       cursor: "pointer",
                     }}
                   />
-                  <AiFillEye
+                  {/* <AiFillEye
                     onClick={() =>
                       navigate("/view-article", {
                         state: {
@@ -425,14 +301,14 @@ const SubAdminList = () => {
                       marginRight: "0.5rem",
                       cursor: "pointer",
                     }}
-                  />
+                  /> */}
                 </StyledTableCell>
               </StyledTableRow>
-            ))}
+            )):""}
           </TableBody>
         </Table>
-        {allArticle.length <= 0 && <DataNotFound />}
-        {allArticle?.length > 0 && (
+        {allApplication.length <= 0 && <DataNotFound />}
+        {allApplication?.length > 0 && (
           <div className={s["pagination"]}>
             <Pagination
               count={pageLength}
@@ -460,4 +336,4 @@ const SubAdminList = () => {
   );
 };
 
-export default SubAdminList;
+export default ApplicationList;

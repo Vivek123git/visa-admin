@@ -13,46 +13,44 @@ import { tableCellClasses } from "@mui/material/TableCell";
 import s from "./event.module.css";
 import { useNavigate } from "react-router-dom";
 import { Dialog, DialogActions, DialogTitle, DialogContent, Pagination } from "@mui/material";
-import { article_delete_api, article_status_api } from "../api/article";
+import { article_delete_api, article_status_api } from "../api/ApplicationApi";
 import { notificationHandler } from "../../utils/Notification";
 import Loder from "../../Loder/Loder";
 import DataNotFound from "../ErrorPage/DataNotFound";
 import { BiFilter, BiSearch } from "react-icons/bi";
-import { fetchAllEvents, update_event_api } from "../api/event";
+ import { fetchAllFormField,formField_delete_api } from "../api/FormFieldApi";
 import DeletePopup from "../Dialogbox/DeletePopup";
 
-const AllEvent = () => {
+const FormFieldList = () => {
   const navigate = useNavigate();
   const [isLoading, setisLoading] = useState(false);
-  const [allEvent, setallEvent] = useState([]);
+  const [formField, setFormField] = useState([]);
   const [pageCount, setpageCount] = useState(1);
   const [deleteId, setdeleteId] = useState();
   const [deletedialobbox, setdeletedialobbox] = useState(false);
   const [deletename, setdeletename] = useState("");
-  const [currentGroup, setcurrentGroup] = useState({});
   const [pageLength, setpageLength] = useState();
+  
   useEffect(() => {
-    fetchAllEventFunc();
+     fetchAllFormFieldFunc();
   }, [pageCount]);
 
-  async function fetchAllEventFunc(data) {
+  async function fetchAllFormFieldFunc() {
     setisLoading(true);
     try {
-      const temp = {
-        page: pageCount,
-        limit: 8,
-        search: data ? data.trim() : "",
-      };
-      let res = await fetchAllEvents(temp);
+      // const temp = {
+      //   page: pageCount,
+      //   limit: 8,
+      //   search: data ? data.trim() : "",
+      // };
+      let res = await fetchAllFormField();
       if (res.data.status) {
-        console.log(res);
         let calPageLength = Math.ceil(res.data.count / 8);
         setpageLength(calPageLength);
-        setallEvent(res.data.results);
+        setFormField(res.data.data);
         setisLoading(false);
       } else {
         setisLoading(false);
-        console.log("status false!");
       }
     } catch (error) {
       console.log(error);
@@ -83,17 +81,14 @@ const AllEvent = () => {
 
   async function deletearticleFunc() {
     setisLoading(true);
-    let temp = {
-      id: deleteId,
-      is_delete: "1",
-    };
+    let temp =deleteId;
     try {
-      let res = await update_event_api(temp);
+      let res = await formField_delete_api(temp);
       console.log(res);
       if (res.data.status) {
         setisLoading(false);
         setdeletedialobbox(false);
-        fetchAllEventFunc();
+        fetchAllFormFieldFunc();
         notificationHandler({ type: "success", msg: res.data.message });
       } else {
         setisLoading(false);
@@ -105,30 +100,7 @@ const AllEvent = () => {
     }
   }
 
-  const article_status = async (data) => {
-    setisLoading(true);
-    let temp = {
-      id: data.id,
-      status: data.status == "Active" ? "InActive" : "Active",
-    };
-    try {
-      let res = await update_event_api(temp);
-      console.log(res);
-
-      if (res.data.status) {
-        setisLoading(false);
-        fetchAllEventFunc();
-        notificationHandler({ type: "success", msg: res.data.message });
-      } else {
-        setisLoading(false);
-        notificationHandler({ type: "danger", msg: res.data.message });
-      }
-    } catch (error) {
-      console.log(error);
-      notificationHandler({ type: "danger", msg: error.message });
-    }
-  };
-
+  
   return (
     <div className="container">
       <div className={s["article-list-title"]}>
@@ -156,7 +128,7 @@ const AllEvent = () => {
             <span style={{ paddingRight: "0.5rem" }}>
               <BiSearch size={23} />
             </span>
-            <input type="text" spellCheck="false" onChange={(e) => fetchAllEventFunc(e.target.value)} placeholder="Search name, Category name..." />
+            <input type="text" spellCheck="false" onChange={(e) => fetchAllFormFieldFunc(e.target.value)} placeholder="Search name, Category name..." />
           </div>
           {/* <div className={s["filter-btn"]}>
             <span style={{ paddingRight: "2px" }}>
@@ -170,40 +142,28 @@ const AllEvent = () => {
         <Table sx={{ minWidth: 700 }} aria-label="customized table">
           <TableHead>
             <TableRow>
-              <StyledTableCell>Image</StyledTableCell>
-              <StyledTableCell align="center">Name</StyledTableCell>
+              <StyledTableCell>S. No.</StyledTableCell>
+              <StyledTableCell align="center">Field Name</StyledTableCell>
               {/* <StyledTableCell align="center">User Name</StyledTableCell> */}
-              <StyledTableCell align="center">Category Name</StyledTableCell>
-              <StyledTableCell align="center">Location</StyledTableCell>
-              <StyledTableCell align="center">Description</StyledTableCell>
-              <StyledTableCell align="center">Date</StyledTableCell>
-              <StyledTableCell align="center">Status</StyledTableCell>
+              <StyledTableCell align="center">Placeholder</StyledTableCell>
+              <StyledTableCell align="center">Input Type</StyledTableCell>
+              {/* <StyledTableCell align="center">Description</StyledTableCell> */}
               <StyledTableCell align="center">Action</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {allEvent.map((row) => (
+            {formField.map((row,id) => (
               <StyledTableRow key={row.id}>
-                <StyledTableCell>{row.image ? <img style={{ height: "2rem", width: "3rem" }} src={row.image} alt="" /> : null}</StyledTableCell>
-                <StyledTableCell>{row.name} </StyledTableCell>
-                {/* <StyledTableCell align="center">{row.user_name} </StyledTableCell> */}
-                <StyledTableCell align="center">{row.category_name}</StyledTableCell>
-                <StyledTableCell align="center">{row.location}</StyledTableCell>
-                <StyledTableCell align="center">{row.description.slice(0, 10)}</StyledTableCell>
-                <StyledTableCell align="center">{row.date}</StyledTableCell>
-                <StyledTableCell align="center">
-                  <div
-                    style={{ cursor: "pointer" }}
-                    onClick={() => article_status(row)}
-                    className={`${row.status === "Active" ? s.active_admin : s.inactive_admin}`}
-                  >
-                    {row.status}
-                  </div>
-                </StyledTableCell>
+                
+                <StyledTableCell>{id+1} </StyledTableCell>
+                <StyledTableCell align="center">{row.value}</StyledTableCell>
+                <StyledTableCell align="center">{row.placeholder} </StyledTableCell>
+                <StyledTableCell align="center">{row.type}</StyledTableCell>
+                
                 <StyledTableCell align="center">
                   <CiEdit
                     onClick={() =>
-                      navigate("/add-event", {
+                      navigate("/add-form", {
                         state: {
                           pagetype: "Edit",
                           data: row,
@@ -221,13 +181,13 @@ const AllEvent = () => {
                   <MdDelete
                     onClick={() => {
                       setdeletedialobbox(true);
-                      setdeletename(row.name);
-                      setdeleteId(row.id);
+                      setdeletename(row.value);
+                      setdeleteId(row._id);
                     }}
                     title="Delete"
                     style={{ fontSize: "1rem", color: "var(--clr-primary)", cursor: "pointer", marginRight: "0.5rem", }}
                   />
-                  <AiFillEye  style={{
+                  {/* <AiFillEye  style={{
                       fontSize: "1rem",
                       color: "var(--clr-primary)",
                       marginRight: "0.5rem",
@@ -235,7 +195,7 @@ const AllEvent = () => {
                     }} 
                     title="View"
                     onClick={() =>
-                      navigate("/view-event", {
+                      navigate("/view-form", {
                         state: {
                           pagetype: "View",
                           data: row,
@@ -243,15 +203,15 @@ const AllEvent = () => {
                       })
                     }
                    
-                  />
+                  /> */}
                   
                 </StyledTableCell>
               </StyledTableRow>
             ))}
           </TableBody >
         </Table>
-        {allEvent.length <= 0 && <DataNotFound />}
-        {allEvent?.length > 0 && (
+        {formField.length <= 0 && <DataNotFound />}
+        {formField?.length > 0 && (
           <div className={s["pagination"]}>
             <Pagination count={pageLength} size="large" style={{ color: "#D21903" }} onChange={(e, value) => setpageCount(value)} page={pageCount} />
           </div>
@@ -271,4 +231,4 @@ const AllEvent = () => {
   );
 };
 
-export default AllEvent;
+export default FormFieldList;

@@ -7,7 +7,7 @@ import { FiLock } from "react-icons/fi";
 import { BsEyeSlash, BsEye } from "react-icons/bs";
 import Custombutton from "../../Common/Custombutton";
 import { useNavigate } from "react-router-dom";
-import authapi from "../api/auth";
+import {authapi} from "../api/auth";
 import Cookies from "js-cookie";
 import { UserContext } from "../../App";
 import { blankValidator, emailValidator } from "../../utils/Validation";

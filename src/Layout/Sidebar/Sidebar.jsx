@@ -38,7 +38,7 @@ const Sidebar = ({ open }) => {
     {
       title: "Country",
       icons: <RxDashboard size={20} />,
-      navigate: "country",
+      navigate: "add-country-list",
       show: false,
       subItems: [],
     },
@@ -46,7 +46,7 @@ const Sidebar = ({ open }) => {
     {
       title: "Add Form Field",
       icons: <MdEvent size={20} />,
-      navigate: "event-list",
+      navigate: "form-list",
       show: false,
       subItems: [],
     },

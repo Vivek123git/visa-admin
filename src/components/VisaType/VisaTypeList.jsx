@@ -13,41 +13,41 @@ import { tableCellClasses } from "@mui/material/TableCell";
 import s from "./../FormField/event.module.css";
 import { useNavigate } from "react-router-dom";
 import { Dialog, DialogActions, DialogTitle, DialogContent, Pagination } from "@mui/material";
-import { article_delete_api, article_status_api } from "../api/article";
 import { notificationHandler } from "../../utils/Notification";
 import Loder from "../../Loder/Loder";
 import DataNotFound from "../ErrorPage/DataNotFound";
 import { BiFilter, BiSearch } from "react-icons/bi";
 import DeletePopup from "../Dialogbox/DeletePopup";
-import { fetchAllSkill,update_skill_api,delete_skill_api } from "../api/skill";
+import { fetchAllVisa,delete_visaType_api } from "../api/VisaTypeApi";
 
-const AllSkill = ({allCategory}) => {
+const VisaTypeList = ({allCategory}) => {
   const navigate = useNavigate();
   const [isLoading, setisLoading] = useState(false);
-  const [allEvent, setallEvent] = useState([]);
+  const [allVisaType, setallVisaType] = useState([]);
   const [pageCount, setpageCount] = useState(1);
   const [deleteId, setdeleteId] = useState();
   const [deletedialobbox, setdeletedialobbox] = useState(false);
   const [deletename, setdeletename] = useState("");
   const [pageLength, setpageLength] = useState();
+
   useEffect(() => {
-     fetchAllEventFunc();
+     fetchAllVisaFunc();
   }, [pageCount]);
 
-  async function fetchAllEventFunc(data) {
+  async function fetchAllVisaFunc() {
     setisLoading(true);
     try {
-      const temp = {
-        page: pageCount,
-        limit: 8,
-        search: data ? data.trim() : "",
-      };
-      let res = await fetchAllSkill(temp);
+      // const temp = {
+      //   page: pageCount,
+      //   limit: 8,
+      //   search: data ? data.trim() : "",
+      // };
+      let res = await fetchAllVisa();
       if (res.data.status) {
         console.log(res,"count")
         let calPageLength = Math.ceil(res.data.count / 8);
         setpageLength(calPageLength);
-        setallEvent(res.data.result);
+        setallVisaType(res.data.data);
         setisLoading(false);
       } else {
         setisLoading(false);
@@ -81,19 +81,16 @@ const AllSkill = ({allCategory}) => {
     borderBottom: "2px solid #00000011",
   }));
 
-
   async function deletearticleFunc() {
     setisLoading(true);
-    let temp = {
-      id: deleteId,
-    };
+    let temp = deleteId;
     try {
-      let res = await delete_skill_api(temp);
+      let res = await delete_visaType_api(temp);
       console.log(res);
       if (res.data.status) {
         setisLoading(false);
         setdeletedialobbox(false);
-         fetchAllEventFunc();
+        fetchAllVisaFunc();
         notificationHandler({ type: "success", msg: res.data.message });
       } else {
         setisLoading(false);
@@ -105,29 +102,6 @@ const AllSkill = ({allCategory}) => {
     }
   }
 
-  const article_status = async (data) => {
-    setisLoading(true);
-    let temp = {
-      id: data._id,
-      status: data.status == "Active" ? "InActive" : "Active",
-    };
-    try {
-      let res = await update_skill_api(temp);
-      console.log(res);
-
-      if (res.data.status) {
-        setisLoading(false);
-         fetchAllEventFunc();
-        notificationHandler({ type: "success", msg: res.data.message });
-      } else {
-        setisLoading(false);
-        notificationHandler({ type: "danger", msg: res.data.message });
-      }
-    } catch (error) {
-      console.log(error);
-      notificationHandler({ type: "danger", msg: error.message });
-    }
-  };
 
   return (
     <div className="container">
@@ -156,7 +130,7 @@ const AllSkill = ({allCategory}) => {
             <span style={{ paddingRight: "0.5rem" }}>
               <BiSearch size={23} />
             </span>
-            <input type="text" spellCheck="false" onChange={(e) => fetchAllEventFunc(e.target.value)}  placeholder="Search skill name..." />
+            <input type="text" spellCheck="false" onChange={(e) => fetchAllVisaFunc(e.target.value)}  placeholder="Search visa type name..." />
           </div>
           {/* <div className={s["filter-btn"]}>
             <span style={{ paddingRight: "2px" }}>
@@ -170,28 +144,20 @@ const AllSkill = ({allCategory}) => {
         <Table sx={{ minWidth: 700 }} aria-label="customized table">
           <TableHead>
             <TableRow>
-              <StyledTableCell align="center">Skill Name</StyledTableCell>
-              <StyledTableCell align="center">Status</StyledTableCell>
+              <StyledTableCell align="center">S. No.</StyledTableCell>
+              <StyledTableCell align="center">Visa Type</StyledTableCell>
               <StyledTableCell align="center">Action</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {allEvent.map((row) => (
+            {allVisaType.map((row,id) => (
               <StyledTableRow key={row._id}>
-                <StyledTableCell align="center">{row.name}</StyledTableCell>
-                <StyledTableCell align="center">
-                  <div
-                    style={{ cursor: "pointer" }}
-                    onClick={() => article_status(row)}
-                    className={`${row.status === "Active" ? s.active_admin : s.inactive_admin}`}
-                  >
-                    {row.status}
-                  </div>
-                </StyledTableCell>
+                <StyledTableCell align="center">{id+1}</StyledTableCell>
+                <StyledTableCell align="center">{row.type}</StyledTableCell>
                 <StyledTableCell align="center">
                   <CiEdit
                     onClick={() =>
-                      navigate("/add-skill", {
+                      navigate("/add-visa-type", {
                         state: {
                           pagetype: "Edit",
                           data: row,
@@ -209,7 +175,7 @@ const AllSkill = ({allCategory}) => {
                   <MdDelete
                     onClick={() => {
                       setdeletedialobbox(true);
-                      setdeletename(row.name);
+                      setdeletename(row.type);
                       setdeleteId(row._id);
                     }}
                     title="Delete"
@@ -221,8 +187,8 @@ const AllSkill = ({allCategory}) => {
             ))}
           </TableBody >
         </Table>
-        {allEvent.length <= 0 && <DataNotFound />}
-        {allEvent?.length > 0 && (
+        {allVisaType.length <= 0 && <DataNotFound />}
+        {allVisaType?.length > 0 && (
           <div className={s["pagination"]}>
             <Pagination count={pageLength} size="large" style={{ color: "#D21903" }} onChange={(e, value) => setpageCount(value)} page={pageCount} />
           </div>
@@ -244,4 +210,4 @@ const AllSkill = ({allCategory}) => {
   );
 };
 
-export default AllSkill;
+export default VisaTypeList;

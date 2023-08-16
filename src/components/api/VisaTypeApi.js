@@ -2,30 +2,11 @@ import Cookies from "js-cookie";
 import axios from "axios";
 import { getBaseUrl } from "../../utils";
 
-const event_list = getBaseUrl() + "admin_api/event_list";
-const add_event = getBaseUrl() + "admin_api/add_event";
-const edit_event = getBaseUrl() + "admin_api/edit_event";
 
-export const update_event_api = async (data) => {
+export const update_visaType_api = async (data) => {
   let config = {
-    method: "post",
-    url: edit_event,
-    headers: { Authorization: `Bearer ${Cookies.get("token")}` },
-    data: data,
-  };
-
-  try {
-    let res = await axios(config);
-    return res;
-  } catch (error) {
-    console.log(error);
-    return error.response;
-  }
-};
-export const add_event_api = async (data) => {
-  let config = {
-    method: "post",
-    url: add_event,
+    method: "patch",
+    url: getBaseUrl() + "visa",
     headers: { Authorization: `Bearer ${Cookies.get("token")}` },
     data: data,
   };
@@ -39,12 +20,46 @@ export const add_event_api = async (data) => {
   }
 };
 
-export const fetchAllEvents = async (data) => {
+
+export const add_visaType_api = async (data) => {
   let config = {
     method: "post",
-    url: event_list,
+    url: getBaseUrl() + "visa",
     headers: { Authorization: `Bearer ${Cookies.get("token")}` },
     data: data,
+  };
+
+  try {
+    let res = await axios(config);
+    return res;
+  } catch (error) {
+    console.log(error);
+    return error.response;
+  }
+};
+
+export const fetchAllVisa = async (data) => {
+  let config = {
+    method: "get",
+    url: getBaseUrl() + "visa",
+    headers: { Authorization: `Bearer ${Cookies.get("token")}` },
+    data: data,
+  };
+
+  try {
+    let res = await axios(config);
+    return res;
+  } catch (error) {
+    console.log(error);
+    return error.response;
+  }
+};
+
+export const delete_visaType_api = async (data) => {
+  let config = {
+    method: "delete",
+    url: getBaseUrl() + `visa/${data}`,
+    headers: { Authorization: `Bearer ${Cookies.get("token")}` },
   };
 
   try {

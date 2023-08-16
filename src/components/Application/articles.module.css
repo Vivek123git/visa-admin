@@ -132,3 +132,8 @@
   flex-grow: 1;
 }
 
+
+.checkbox-form{
+  width: 20px;
+  margin: 0px 20px 0px 0px;
+}

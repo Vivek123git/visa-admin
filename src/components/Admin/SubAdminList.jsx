@@ -29,7 +29,7 @@ const SubAdminList = () => {
   const [pageLength, setpageLength] = useState();
 
   useEffect(() => {
-    fetchAllAdminFunc();
+    // fetchAllAdminFunc();
   }, [pageCount]);
 
   async function fetchAllAdminFunc(data) {

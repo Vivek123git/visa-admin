@@ -97,14 +97,14 @@ const Home1 = () => {
     routeArray.map((item) => {
       allRoutes.push(item.params);
     });
-    if (!allRoutes.includes(route)) {
-      navigate("/error");
-    }
-    const auth = Cookies.get("auth");
-    if (auth === "true") {
-    } else {
-      return navigate("/");
-    }
+    // if (!allRoutes.includes(route)) {
+    //   navigate("/error");
+    // }
+    // const auth = Cookies.get("auth");
+    // if (auth === "true") {
+    // } else {
+    //   return navigate("/");
+    // }
   }, []);
 
   useEffect(() => {

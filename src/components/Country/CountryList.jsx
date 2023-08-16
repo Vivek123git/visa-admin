@@ -12,28 +12,28 @@ import { tableCellClasses } from "@mui/material/TableCell";
 import s from "./../FormField/event.module.css";
 import { useNavigate } from "react-router-dom";
 import { Dialog, DialogActions, DialogTitle, DialogContent, Pagination } from "@mui/material";
-import { article_delete_api, article_status_api } from "../api/article";
 import { notificationHandler } from "../../utils/Notification";
 import Loder from "../../Loder/Loder";
 import DataNotFound from "../ErrorPage/DataNotFound";
 import { BiFilter, BiSearch } from "react-icons/bi";
 import DeletePopup from "../Dialogbox/DeletePopup";
-import { fetchAllCategory,update_category_api ,delete_category_api} from "../api/category";
+import { fetchAllCountry,delete_country_api} from "../api/CountryApi";
 
-const AllCategory = ({allCategory}) => {
+const CountryList = ({allCategory}) => {
   const navigate = useNavigate();
   const [isLoading, setisLoading] = useState(false);
-  const [allEvent, setallEvent] = useState([]);
+  const [allCountry, setallCountry] = useState([]);
   const [pageCount, setpageCount] = useState(1);
   const [deleteId, setdeleteId] = useState();
   const [deletedialobbox, setdeletedialobbox] = useState(false);
   const [deletename, setdeletename] = useState("");
   const [pageLength, setpageLength] = useState();
+
   useEffect(() => {
-     fetchAllEventFunc();
+    fetchAllCountryFunc();
   }, [pageCount]);
 
-  async function fetchAllEventFunc(data) {
+  async function fetchAllCountryFunc(data) {
     setisLoading(true);
     try {
       const temp = {
@@ -41,12 +41,11 @@ const AllCategory = ({allCategory}) => {
         limit: 8,
         search: data ? data.trim() : "",
       };
-      let res = await fetchAllCategory(temp);
+      let res = await fetchAllCountry(temp);
       if (res.data.status) {
-     console.log(res,"count")
         let calPageLength = Math.ceil(res.data.count / 8);
         setpageLength(calPageLength);
-        setallEvent(res.data.result);
+        setallCountry(res.data.data);
         setisLoading(false);
       } else {
         setisLoading(false);
@@ -55,6 +54,7 @@ const AllCategory = ({allCategory}) => {
       console.log(error);
     }
   }
+
 
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -80,15 +80,13 @@ const AllCategory = ({allCategory}) => {
 
   async function deletearticleFunc() {
     setisLoading(true);
-    let temp = {
-      id: deleteId,
-    };
+    let temp = deleteId;
     try {
-      let res = await delete_category_api(temp);
+      let res = await delete_country_api(temp);
       if (res.data.status) {
         setisLoading(false);
         setdeletedialobbox(false);
-         fetchAllEventFunc();
+         fetchAllCountryFunc();
         notificationHandler({ type: "success", msg: res.data.message });
       } else {
         setisLoading(false);
@@ -100,28 +98,7 @@ const AllCategory = ({allCategory}) => {
     }
   }
 
-  const article_status = async (data) => {
-    setisLoading(true);
-    let temp = {
-      Cid: data._id,
-      status: data.status == "Active" ? "InActive" : "Active",
-    };
-    console.log(temp,"temp")
-    try {
-      let res = await update_category_api(temp);
-      if (res.data.status) {
-        setisLoading(false);
-         fetchAllEventFunc();
-        notificationHandler({ type: "success", msg: res.data.message });
-      } else {
-        setisLoading(false);
-        notificationHandler({ type: "danger", msg: res.data.message });
-      }
-    } catch (error) {
-      console.log(error);
-      notificationHandler({ type: "danger", msg: error.message });
-    }
-  };
+  
 
   return (
     <div className="container">
@@ -134,7 +111,7 @@ const AllCategory = ({allCategory}) => {
             <div
               className={s["title"]}
               onClick={() =>
-                navigate("/add-country-list", {
+                navigate("/add-country", {
                   state: {
                     pagetype: "Add",
                   },
@@ -150,44 +127,29 @@ const AllCategory = ({allCategory}) => {
             <span style={{ paddingRight: "0.5rem" }}>
               <BiSearch size={23} />
             </span>
-            <input type="text" spellCheck="false" onChange={(e) => fetchAllEventFunc(e.target.value)} placeholder="Search category name..." />
+            <input type="text" spellCheck="false" onChange={(e) => fetchAllCountryFunc(e.target.value)} placeholder="Search country name..." />
           </div>
-          {/* <div className={s["filter-btn"]}>
-            <span style={{ paddingRight: "2px" }}>
-              <BiFilter size={20} />
-            </span>
-            Filter
-          </div> */}
         </div>
       </div>
       <div className="beat_table">
         <Table sx={{ minWidth: 700 }} aria-label="customized table">
           <TableHead>
             <TableRow>
-            <StyledTableCell align="center">Image</StyledTableCell>
-              <StyledTableCell align="center">Category Name</StyledTableCell>
-              <StyledTableCell align="center">Status</StyledTableCell>
+            <StyledTableCell align="center">S.No.</StyledTableCell>
+              <StyledTableCell align="center">Country Name</StyledTableCell>
+              {/* <StyledTableCell align="center">Status</StyledTableCell> */}
               <StyledTableCell align="center">Action</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {allEvent.map((row) => (
+            {allCountry.map((row,id) => (
               <StyledTableRow key={row.id}>
-                <StyledTableCell style={{width:"80px"}}>{row.image ? <img style={{ height: "2rem", width: "3rem" }} src={row.image} alt="" /> : null}</StyledTableCell>
+                <StyledTableCell style={{width:"80px"}}>{id+1}</StyledTableCell>
                 <StyledTableCell align="center">{row.name}</StyledTableCell>
-                <StyledTableCell align="center">
-                  <div
-                    style={{ cursor: "pointer" }}
-                    onClick={() => article_status(row)}
-                    className={`${row.status === "Active" ? s.active_admin : s.inactive_admin}`}
-                  >
-                    {row.status}
-                  </div>
-                </StyledTableCell>
                 <StyledTableCell align="center">
                   <CiEdit
                     onClick={() =>
-                      navigate("/add-category", {
+                      navigate("/add-country", {
                         state: {
                           pagetype: "Edit",
                           data: row,
@@ -217,8 +179,8 @@ const AllCategory = ({allCategory}) => {
             ))}
           </TableBody >
         </Table>
-        {allEvent.length <= 0 && <DataNotFound />}
-        {allEvent?.length > 0 && (
+        {allCountry.length <= 0 && <DataNotFound />}
+        {allCountry?.length > 0 && (
           <div className={s["pagination"]}>
             <Pagination count={pageLength} size="large" style={{ color: "#D21903" }} onChange={(e, value) => setpageCount(value)} page={pageCount} />
           </div>
@@ -240,4 +202,4 @@ const AllCategory = ({allCategory}) => {
   );
 };
 
-export default AllCategory;
+export default CountryList;
