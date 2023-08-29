@@ -21,7 +21,7 @@ const AddEvent = () => {
   const [formData, setFormData] = useState({
     value: "",
     type: "",
-    defaultChecked: false,
+    defaultChecked: null,
     placeholder: "",
   });
   const [optionBox, setOptionBox] = useState(false);
@@ -40,10 +40,10 @@ const AddEvent = () => {
         value: location?.state?.data?.value,
         type: location?.state?.data?.type,
         placeholder: location?.state?.data?.placeholder,
+        defaultChecked:location?.state?.data?.default_checked
       });
 
       let a = location?.state?.data?.type;
-      console.log(a)
       if (a === "select" || a === "radio" || a === "check" ) {
         const updatedOptions = location?.state?.data?.sub_fields.map(item => ({
           name: item.name,
@@ -72,7 +72,6 @@ const AddEvent = () => {
       try {
         let res = await formField_add_api(fd);
         if (res.data.status) {
-          console.log(res);
           navigate("/form-list");
 
         
@@ -235,6 +234,26 @@ const AddEvent = () => {
                   <option value="check">Check</option>
                   <option value="radio">Radio</option>
                   <option value="file">File</option>
+                </select>
+              </div>
+            </Grid>
+            <Grid item xs={6}>
+              <div className="form-group">
+                <label className="label-name">Common Input type</label>
+                <select
+                  className="form-control"
+                  id="exampleFormControlSelect1"
+                  name="defaultChecked"
+                  value={formData.defaultChecked}
+                  // onChange={(e) => getformdetails(e)}
+                  onChange={(e) => handleChange(e)}
+                >
+                  <option selected value="">
+                    Select Input Type
+                  </option>
+                  <option value="true">True</option>
+                  <option value="false">false</option>
+                  
                 </select>
               </div>
             </Grid>

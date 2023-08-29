@@ -55,9 +55,8 @@ export const application_delete_api = async (data) => {
 export const fetchAllApplication = async (data) => {
   let config = {
     method: "get",
-    url: getBaseUrl() + "application_forms",
+    url: getBaseUrl() + `application_forms?limit=${data.limit}&page=${data.page}`,
     headers: { Authorization: `Bearer ${Cookies.get("token")}` },
-    data: data,
   };
 
   try {

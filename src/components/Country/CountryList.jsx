@@ -11,7 +11,8 @@ import TableCell from "@mui/material/TableCell";
 import { tableCellClasses } from "@mui/material/TableCell";
 import s from "./../FormField/event.module.css";
 import { useNavigate } from "react-router-dom";
-import { Dialog, DialogActions, DialogTitle, DialogContent, Pagination } from "@mui/material";
+import {  Pagination } from "@mui/material";
+import Stack from '@mui/material/Stack';
 import { notificationHandler } from "../../utils/Notification";
 import Loder from "../../Loder/Loder";
 import DataNotFound from "../ErrorPage/DataNotFound";
@@ -29,6 +30,11 @@ const CountryList = ({allCategory}) => {
   const [deletename, setdeletename] = useState("");
   const [pageLength, setpageLength] = useState();
 
+  const itemsPerPage = 10;
+  const indexOfLastItem = pageCount * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = allCountry.slice(indexOfFirstItem, indexOfLastItem);
+
   useEffect(() => {
     fetchAllCountryFunc();
   }, [pageCount]);
@@ -43,7 +49,8 @@ const CountryList = ({allCategory}) => {
       };
       let res = await fetchAllCountry(temp);
       if (res.data.status) {
-        let calPageLength = Math.ceil(res.data.count / 8);
+        console.log(res.data.data.length)
+        let calPageLength = Math.ceil(res.data.data.length / 10);
         setpageLength(calPageLength);
         setallCountry(res.data.data);
         setisLoading(false);
@@ -98,7 +105,9 @@ const CountryList = ({allCategory}) => {
     }
   }
 
-  
+  const handleChangePage = (event, newPage) => {
+    setpageCount(newPage);
+  };  
 
   return (
     <div className="container">
@@ -142,7 +151,7 @@ const CountryList = ({allCategory}) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {allCountry.map((row,id) => (
+            {currentItems.map((row,id) => (
               <StyledTableRow key={row.id}>
                 <StyledTableCell style={{width:"80px"}}>{id+1}</StyledTableCell>
                 <StyledTableCell align="center">{row.name}</StyledTableCell>
@@ -182,7 +191,7 @@ const CountryList = ({allCategory}) => {
         {allCountry.length <= 0 && <DataNotFound />}
         {allCountry?.length > 0 && (
           <div className={s["pagination"]}>
-            <Pagination count={pageLength} size="large" style={{ color: "#D21903" }} onChange={(e, value) => setpageCount(value)} page={pageCount} />
+            <Pagination count={pageLength} size="large" style={{ color: "#D21903" }} onChange={handleChangePage} page={pageCount} />
           </div>
         )}
       </div>

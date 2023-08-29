@@ -6,6 +6,7 @@ import Custombutton from "../../Common/Custombutton";
 import { notificationHandler } from "../../utils/Notification";
 import { blankValidator, emailValidator } from "../../utils/Validation";
 import { useLocation } from "react-router-dom";
+import Select from "react-select";
 import { Card, Grid } from "@mui/material";
 import {
   application_add_api,
@@ -39,14 +40,28 @@ const ApplicationAdd = () => {
     fees: {
       government_fees: "",
     },
+    sub_type: [],
+    visa_mode: [],
   });
+
+  const visa_mode = [
+    { label: "General", value: "general" },
+    { label: "Urgent", value: "urgent" },
+    { label: "Superfast", value: "superfast" },
+  ];
+  const visa_duration = [
+    { label: "15 days", value: "15 days" },
+    { label: "1 Month", value: "1 Month" },
+    { label: "3 Months", value: "3 Months" },
+    { label: "6 Months", value: "6 Months" },
+    { label: "1 Year", value: "1 Year" },
+  ];
+
   const pagetype = location.state.pagetype;
   const id = location?.state?.data?._id;
-  console.log(location?.state?.data);
 
   useEffect(() => {
     if (pagetype === "Edit") {
-      console.log(location?.state?.data);
       setApplication({
         ...application,
         toCountry: location?.state?.data.to_country._id,
@@ -66,30 +81,32 @@ const ApplicationAdd = () => {
           government_fees:
             location?.state?.data.visa_details.fees.government_fees,
         },
+        sub_type: location?.state?.data.visa_details.sub_type,
+        visa_mode: location?.state?.data.visa_details.visa_mode,
       });
       setFields(location?.state?.data.fields);
+    } else {
+      const filteredFields = visaForm.filter((elem) => elem.checked === true);
+      setFields(filteredFields);
     }
-  }, [location]);
+  }, [location, visaForm]);
 
-  const handleChangeApp = (e) => {
+  const handleChangeApp = (e, elem) => {
     const { name, type, checked, value } = e.target;
-
     if (type === "checkbox") {
+      elem.checked = !elem.checked;
       if (checked) {
-        setFields([...fields, value]);
+        setFields([...fields, elem]);
       } else {
-        setFields(fields.filter((item) => item !== value));
+        setFields(fields.filter((item) => item._id !== elem._id));
       }
     } else {
-      console.log(name);
       setApplication({
         ...application,
         [name]: value,
       });
     }
   };
-
-  console.log(fields, "fields");
 
   const handleVisaDetails = (e) => {
     const { name, value } = e.target;
@@ -107,6 +124,20 @@ const ApplicationAdd = () => {
         [name]: value,
       });
     }
+  };
+
+  const handleSelectDuration = (selected) => {
+    setVisaDetails({
+      ...visaDetails,
+      sub_type: selected,
+    });
+  };
+
+  const handleSelectMode = (selected) => {
+    setVisaDetails({
+      ...visaDetails,
+      visa_mode: selected,
+    });
   };
 
   const create_user = async () => {
@@ -180,7 +211,10 @@ const ApplicationAdd = () => {
     try {
       let res = await fetchAllFormField();
       if (res.data.status) {
-        setVisaForm(res.data.data);
+        let cc = res.data.data.map((x) => {
+          return { ...x, checked: x.default_checked };
+        });
+        setVisaForm(cc);
       }
     } catch (error) {
       console.log(error);
@@ -192,8 +226,6 @@ const ApplicationAdd = () => {
     fetchAllCountryFunc();
     fetchAllVisaFunc();
   }, []);
-
-  console.log(visaForm, "form");
 
   return (
     <>
@@ -251,7 +283,7 @@ const ApplicationAdd = () => {
               </div>
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid item xs={6}>
               <div className="form-group">
                 <label className="label-name">Select VISA type</label>
                 <select
@@ -274,44 +306,30 @@ const ApplicationAdd = () => {
             </Grid>
 
             <Grid item xs={6}>
+              <div className="">
+                <label className="label-name">VISA Duration</label>
+                <Select
+                  isMulti
+                  options={visa_duration}
+                  value={visaDetails.sub_type}
+                  onChange={handleSelectDuration}
+                />
+              </div>
+            </Grid>
+            <Grid item xs={6}>
               <div className="form-group">
-                <label className="label-name" htmlFor="entry_allowed">
-                  Entry Allowed
+                <label htmlFor="visa_mode" className="label-name">
+                  Select Mode
                 </label>
-                <select
-                  className="form-control"
-                  name="entry_allowed"
-                  value={visaDetails.entry_allowed}
-                  onChange={handleVisaDetails}
-                >
-                  <option selected value="">
-                    Choose one option
-                  </option>
-                  <option value="true">True</option>
-                  <option value="false">False</option>
-                </select>
+                <Select
+                  isMulti
+                  options={visa_mode}
+                  value={visaDetails.visa_mode}
+                  onChange={handleSelectMode}
+                />
               </div>
             </Grid>
 
-            <Grid item xs={6}>
-              <div className="form-group">
-                <label className="label-name" htmlFor="visa_required">
-                  Visa Required
-                </label>
-                <select
-                  className="form-control"
-                  name="visa_required"
-                  value={visaDetails.visa_required}
-                  onChange={handleVisaDetails}
-                >
-                  <option selected value="">
-                    Choose one option
-                  </option>
-                  <option value="true">True</option>
-                  <option value="false">False</option>
-                </select>
-              </div>
-            </Grid>
             <Grid item xs={6}>
               <div className="form-group">
                 <label className="label-name" htmlFor="validity">
@@ -330,7 +348,7 @@ const ApplicationAdd = () => {
             <Grid item xs={6}>
               <div className="form-group">
                 <label className="label-name" htmlFor="number_of_entries">
-                  Number Of Entries{" "}
+                  Number Of Entries
                 </label>
                 <input
                   type="Number"
@@ -355,6 +373,44 @@ const ApplicationAdd = () => {
                   onChange={handleVisaDetails}
                   placeholder="In Days"
                 />
+              </div>
+            </Grid>
+            <Grid item xs={6}>
+              <div className="form-group">
+                <label className="label-name" htmlFor="passport_required">
+                  Entry Allowed
+                </label>
+                <select
+                  className="form-control"
+                  name="entry_allowed"
+                  value={visaDetails.entry_allowed}
+                  onChange={handleVisaDetails}
+                >
+                  <option selected value="">
+                    Choose one option
+                  </option>
+                  <option value="true">True</option>
+                  <option value="false">False</option>
+                </select>
+              </div>
+            </Grid>
+            <Grid item xs={6}>
+              <div className="form-group">
+                <label className="label-name" htmlFor="passport_required">
+                  Visa Required
+                </label>
+                <select
+                  className="form-control"
+                  name="visa_required"
+                  value={visaDetails.visa_required}
+                  onChange={handleVisaDetails}
+                >
+                  <option selected value="">
+                    Choose one option
+                  </option>
+                  <option value="true">True</option>
+                  <option value="false">False</option>
+                </select>
               </div>
             </Grid>
             <Grid item xs={6}>
@@ -392,22 +448,89 @@ const ApplicationAdd = () => {
               </div>
             </Grid>
 
-            <Grid item xs={12}>
-              <label className="label-name">Select VISA form</label>
+            <Grid item xs={6}>
+              <label className="label-name">VISA form Input type (text , radio , select)</label>
               <div className="form-group">
                 {visaForm.length > 0
-                  ? visaForm.map((elem) => (
-                      <div className="d-flex" key={elem._id}>
-                        <input
-                          className={s["checkbox-form"]}
-                          type="checkbox"
-                          value={elem.value}
-                          checked={fields.includes(elem.value)}
-                          onChange={(e) => handleChangeApp(e, elem.value)}
-                        />
-                        <label htmlFor={elem._id}>{elem.value}</label>
-                      </div>
-                    ))
+                  ? visaForm.map((elem) => { 
+                      if (
+                        elem.type === "text" ||
+                        elem.type === "select" ||
+                        elem.type === "radio"
+                      ) {
+                        return (
+                          <div className="d-flex" key={elem._id}>
+                            <input
+                              className={s["checkbox-form"]}
+                              type="checkbox"
+                              checked={fields.some(
+                                (item) => item._id === elem._id
+                              )}
+                              onChange={(e) => handleChangeApp(e, elem)}
+                            />
+                            <label htmlFor={elem._id}>{elem.value}</label>
+                          </div>
+                        );
+                      } else {
+                        return null;
+                      }
+                    })
+                  : ""}
+              </div>
+            </Grid>
+            <Grid item xs={6}>
+              <label className="label-name">VISA form Input type(File)</label>
+              <div className="form-group">
+                {visaForm.length > 0
+                  ? visaForm.map((elem) => {
+                      if (
+                        elem.type === "file" 
+                      ) {
+                        return (
+                          <div className="d-flex" key={elem._id}>
+                            <input
+                              className={s["checkbox-form"]}
+                              type="checkbox"
+                              checked={fields.some(
+                                (item) => item._id === elem._id
+                              )}
+                              onChange={(e) => handleChangeApp(e, elem)}
+                            />
+                            <label htmlFor={elem._id}>{elem.value}</label>
+                          </div>
+                        );
+                      } else {
+                        return null;
+                      }
+                    })
+                  : ""}
+              </div>
+            </Grid>
+            <Grid item xs={12}>
+              <label className="label-name">VISA form Input type (Checkbox)</label>
+              <div className="form-group">
+                {visaForm.length > 0
+                  ? visaForm.map((elem) => {
+                      if (
+                        elem.type === "check" 
+                      ) {
+                        return (
+                          <div className="d-flex" key={elem._id}>
+                            <input
+                              className={s["checkbox-form"]}
+                              type="checkbox"
+                              checked={fields.some(
+                                (item) => item._id === elem._id
+                              )}
+                              onChange={(e) => handleChangeApp(e, elem)}
+                            />
+                            <label htmlFor={elem._id}>{elem.value}</label>
+                          </div>
+                        );
+                      } else {
+                        return null;
+                      }
+                    })
                   : ""}
               </div>
             </Grid>

@@ -58,13 +58,13 @@ const Sidebar = ({ open }) => {
       show: false,
       subItems: [],
     },
-    {
-      title: " Users",
-      icons: <FiUsers size={20} />,
-      navigate: "users",
-      show: false,
-      subItems: [],
-    },
+    // {
+    //   title: " Users",
+    //   icons: <FiUsers size={20} />,
+    //   navigate: "users",
+    //   show: false,
+    //   subItems: [],
+    // },
     // {
     //   title: " Articles",
     //   icons: <MdOutlineArticle size={20} />,

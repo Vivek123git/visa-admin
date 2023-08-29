@@ -12,8 +12,7 @@ import TableCell from "@mui/material/TableCell";
 import { tableCellClasses } from "@mui/material/TableCell";
 import s from "./event.module.css";
 import { useNavigate } from "react-router-dom";
-import { Dialog, DialogActions, DialogTitle, DialogContent, Pagination } from "@mui/material";
-import { article_delete_api, article_status_api } from "../api/ApplicationApi";
+import { Pagination } from "@mui/material";
 import { notificationHandler } from "../../utils/Notification";
 import Loder from "../../Loder/Loder";
 import DataNotFound from "../ErrorPage/DataNotFound";
@@ -30,7 +29,12 @@ const FormFieldList = () => {
   const [deletedialobbox, setdeletedialobbox] = useState(false);
   const [deletename, setdeletename] = useState("");
   const [pageLength, setpageLength] = useState();
-  
+
+  const itemsPerPage = 10;
+  const indexOfLastItem = pageCount * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = formField.slice(indexOfFirstItem, indexOfLastItem);
+ 
   useEffect(() => {
      fetchAllFormFieldFunc();
   }, [pageCount]);
@@ -45,7 +49,8 @@ const FormFieldList = () => {
       // };
       let res = await fetchAllFormField();
       if (res.data.status) {
-        let calPageLength = Math.ceil(res.data.count / 8);
+        console.log(res.data.data.length)
+        let calPageLength = Math.ceil(res.data.data.length/ 10);
         setpageLength(calPageLength);
         setFormField(res.data.data);
         setisLoading(false);
@@ -100,6 +105,10 @@ const FormFieldList = () => {
     }
   }
 
+  const handleChangePage = (event, newPage) => {
+    setpageCount(newPage);
+  };
+
   
   return (
     <div className="container">
@@ -147,19 +156,20 @@ const FormFieldList = () => {
               {/* <StyledTableCell align="center">User Name</StyledTableCell> */}
               <StyledTableCell align="center">Placeholder</StyledTableCell>
               <StyledTableCell align="center">Input Type</StyledTableCell>
-              {/* <StyledTableCell align="center">Description</StyledTableCell> */}
+              <StyledTableCell align="center">Common Input</StyledTableCell>
               <StyledTableCell align="center">Action</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {formField.map((row,id) => (
+            {currentItems.map((row,id) => {
+              return(
               <StyledTableRow key={row.id}>
                 
                 <StyledTableCell>{id+1} </StyledTableCell>
                 <StyledTableCell align="center">{row.value}</StyledTableCell>
                 <StyledTableCell align="center">{row.placeholder} </StyledTableCell>
                 <StyledTableCell align="center">{row.type}</StyledTableCell>
-                
+                <StyledTableCell align="center">{row.default_checked.toString()}</StyledTableCell>
                 <StyledTableCell align="center">
                   <CiEdit
                     onClick={() =>
@@ -207,13 +217,13 @@ const FormFieldList = () => {
                   
                 </StyledTableCell>
               </StyledTableRow>
-            ))}
+            )})}
           </TableBody >
         </Table>
         {formField.length <= 0 && <DataNotFound />}
         {formField?.length > 0 && (
           <div className={s["pagination"]}>
-            <Pagination count={pageLength} size="large" style={{ color: "#D21903" }} onChange={(e, value) => setpageCount(value)} page={pageCount} />
+            <Pagination count={pageLength} size="large" style={{ color: "#D21903" }} onChange={handleChangePage} page={pageCount} />
           </div>
         )}
       </div>

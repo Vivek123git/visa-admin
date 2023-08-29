@@ -41,20 +41,20 @@ const ApplicationList = () => {
     fetchAllApplicationFunc();
   }, [pageCount]);
 
-  async function fetchAllApplicationFunc(data) {
+  async function fetchAllApplicationFunc() {
     setisLoading(true);
     try {
-      // const temp = {
-      //   page: pageCount,
-      //   limit: 8,
-      //   search: data ? data.trim() : "",
-      //   status: status,
-      //   from_date: startdate,
-      //   to_date: enddate,
-      // };
-      let res = await fetchAllApplication();
+      const temp = {
+        page: pageCount,
+        limit: 8,
+        // search: data ? data.trim() : "",
+        // status: status,
+        // from_date: startdate,
+        // to_date: enddate,
+      };
+      let res = await fetchAllApplication(temp);
       if (res.data.status) {
-        let calPageLength = Math.ceil(res.data.count / 8);
+        let calPageLength = Math.ceil(res.data.total_visas / 8);
         setpageLength(calPageLength);
         setallApplication(res.data.data);
         setisLoading(false);
